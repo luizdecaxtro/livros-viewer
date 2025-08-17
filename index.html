@@ -355,7 +355,7 @@
         </div>
     </div>
 
-    <script>
+    <script type="text/javascript">
         // Configuração da API do GitHub
         const GITHUB_API_BASE = 'https://api.github.com';
         const REPO_OWNER = 'luizdecaxtro';
@@ -536,7 +536,7 @@
             currentFile = file;
             currentPage = 1;
             currentZoom = 100;
-            totalPages = 1; // Será atualizado quando o PDF carregar
+            totalPages = 1;
             
             document.getElementById('searchSection').style.display = 'none';
             document.getElementById('viewerSection').style.display = 'block';
@@ -545,7 +545,69 @@
             updatePageInfo();
             updateZoomLevel();
             
-            loadPDF(file.downloadUrl);
+            // Solução definitiva: sempre usar iframe protegido
+            showProtectedViewer(file);
+        }
+
+        function showProtectedViewer(file) {
+            const viewer = document.getElementById('pdfViewer');
+            
+            viewer.innerHTML = `
+                <div style="padding: 20px; text-align: center; background: white; border-radius: 10px;">
+                    <h3 style="color: #333; margin-bottom: 20px;">📄 ${file.name}</h3>
+                    <p style="color: #666; margin-bottom: 25px;">
+                        Clique no botão abaixo para visualizar o PDF com proteções ativas.
+                    </p>
+                    
+                    <button onclick="openProtectedPDF('${file.downloadUrl}', '${file.name}')" 
+                        style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+                               color: white; 
+                               border: none; 
+                               padding: 15px 30px; 
+                               border-radius: 8px; 
+                               cursor: pointer; 
+                               font-size: 18px; 
+                               font-weight: 600;
+                               box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                               transition: all 0.3s ease;
+                               margin: 10px;"
+                        onmouseover="this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.transform='translateY(0)'">
+                        🔒 Visualizar PDF Protegido
+                    </button>
+                    
+                    <button onclick="openPDFDirect('${file.downloadUrl}')" 
+                        style="background: linear-gradient(135deg, #007bff 0%, #6610f2 100%); 
+                               color: white; 
+                               border: none; 
+                               padding: 15px 30px; 
+                               border-radius: 8px; 
+                               cursor: pointer; 
+                               font-size: 18px; 
+                               font-weight: 600;
+                               box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+                               transition: all 0.3s ease;
+                               margin: 10px;"
+                        onmouseover="this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.transform='translateY(0)'">
+                        📖 Abrir em Nova Aba
+                    </button>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 25px;">
+                        <h4 style="color: #495057; margin-bottom: 10px;">🛡️ Proteções Ativas:</h4>
+                        <ul style="color: #6c757d; text-align: left; display: inline-block;">
+                            <li>✅ Print bloqueado (Ctrl+P)</li>
+                            <li>✅ Download bloqueado (Ctrl+S)</li>
+                            <li>✅ Clique direito desabilitado</li>
+                            <li>✅ DevTools bloqueados</li>
+                        </ul>
+                    </div>
+                    
+                    <p style="color: #28a745; margin-top: 20px; font-weight: 600;">
+                        📊 Arquivo: ${file.size} | ⚡ Carregamento otimizado
+                    </p>
+                </div>
+            `;
         }
 
         async function loadPDF(url) {
@@ -658,38 +720,140 @@
             }
         }
         
-        // Função para abrir PDF com proteções
-        function downloadWithProtection(url, filename) {
-            const newWindow = window.open('', '_blank');
+        // Função para abrir PDF com proteções máximas
+        function openProtectedPDF(url, filename) {
+            const newWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+            
             newWindow.document.write(`
+                <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>📚 ${filename} - Livros de Castro</title>
+                    <title>📚 ${filename} - Livros de Castro (Protegido)</title>
+                    <meta charset="UTF-8">
                     <style>
-                        body { margin: 0; font-family: Arial, sans-serif; background: #667eea; }
-                        iframe { width: 100%; height: 100vh; border: none; }
-                        .header { background: rgba(255,255,255,0.9); padding: 10px; text-align: center; }
-                        @media print { body { display: none !important; } }
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body { 
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            height: 100vh;
+                            overflow: hidden;
+                        }
+                        .header {
+                            background: rgba(255,255,255,0.95);
+                            padding: 15px;
+                            text-align: center;
+                            backdrop-filter: blur(10px);
+                            border-bottom: 1px solid rgba(0,0,0,0.1);
+                            position: sticky;
+                            top: 0;
+                            z-index: 1000;
+                        }
+                        .viewer-container {
+                            height: calc(100vh - 70px);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 20px;
+                        }
+                        iframe {
+                            width: 100%;
+                            height: 100%;
+                            border: none;
+                            border-radius: 10px;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                            background: white;
+                        }
+                        .protection-notice {
+                            position: fixed;
+                            bottom: 20px;
+                            right: 20px;
+                            background: rgba(40, 167, 69, 0.9);
+                            color: white;
+                            padding: 10px 15px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            backdrop-filter: blur(10px);
+                        }
+                        @media print {
+                            body { display: none !important; }
+                            * { display: none !important; }
+                        }
+                        /* Bloquear seleção */
+                        * {
+                            -webkit-user-select: none;
+                            -moz-user-select: none;
+                            -ms-user-select: none;
+                            user-select: none;
+                        }
                     </style>
-                    <script>
-                        // Proteções
-                        document.addEventListener('keydown', function(e) {
-                            if (e.ctrlKey && (e.key === 's' || e.key === 'p')) {
-                                e.preventDefault();
-                                alert('Download/Print bloqueado por proteção!');
-                            }
-                        });
-                        document.oncontextmenu = () => false;
-                    </script>
                 </head>
                 <body>
                     <div class="header">
-                        <strong>📚 ${filename}</strong> - Visualização Protegida
+                        <h3 style="color: #333;">📚 ${filename}</h3>
+                        <small style="color: #666;">Visualização Protegida - Livros de Castro</small>
                     </div>
-                    <iframe src="${url}"></iframe>
+                    
+                    <div class="viewer-container">
+                        <iframe src="${url}" sandbox="allow-scripts allow-same-origin"></iframe>
+                    </div>
+                    
+                    <div class="protection-notice">
+                        🛡️ Protegido contra download
+                    </div>
+
+                    <script>
+                        // Proteções máximas
+                        document.addEventListener('keydown', function(e) {
+                            // Bloquear Ctrl+S, Ctrl+P, F12, Ctrl+Shift+I, etc.
+                            if (
+                                (e.ctrlKey && (e.key === 's' || e.key === 'p' || e.key === 'u')) ||
+                                e.key === 'F12' ||
+                                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'))
+                            ) {
+                                e.preventDefault();
+                                alert('🚫 Ação bloqueada por segurança!');
+                                return false;
+                            }
+                        });
+                        
+                        // Bloquear clique direito
+                        document.oncontextmenu = function() {
+                            alert('🚫 Clique direito desabilitado!');
+                            return false;
+                        };
+                        
+                        // Detectar DevTools
+                        let devtools = { open: false };
+                        const threshold = 160;
+                        setInterval(() => {
+                            if (window.outerHeight - window.innerHeight > threshold || 
+                                window.outerWidth - window.innerWidth > threshold) {
+                                if (!devtools.open) {
+                                    devtools.open = true;
+                                    alert('🚫 Ferramentas de desenvolvedor detectadas!');
+                                    window.close();
+                                }
+                            } else {
+                                devtools.open = false;
+                            }
+                        }, 500);
+                        
+                        // Bloquear drag and drop
+                        document.addEventListener('dragstart', e => e.preventDefault());
+                        document.addEventListener('drop', e => e.preventDefault());
+                        
+                        // Bloquear copy/paste
+                        document.addEventListener('copy', e => e.preventDefault());
+                        document.addEventListener('paste', e => e.preventDefault());
+                    </script>
                 </body>
                 </html>
             `);
+        }
+
+        // Função para abrir PDF direto (sem proteções extra)
+        function openPDFDirect(url) {
+            window.open(url, '_blank');
         }
 
         async function renderPage(num) {
