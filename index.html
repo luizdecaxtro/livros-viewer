@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Livros de Castro – Leitor de PDF</title>
-    <title>Leia Com Mais Prazer</title>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -56,26 +55,6 @@
         }
         .message.success { background: #d4edda; color: #155724; }
         .message.error { background: #f8d7da; color: #721c24; }
-        .file-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .file-item {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        .file-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        .file-icon { font-size: 2em; text-align: center; margin-bottom: 10px; }
-        .file-name { font-weight: bold; margin-bottom: 8px; color: #333; }
-        .file-info { color: #666; font-size: 0.9em; }
         .viewer-section {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
@@ -99,18 +78,10 @@
             border-radius: 8px;
             cursor: pointer;
         }
-        .pdf-button {
-            display: inline-block;
-            padding: 15px 25px;
-            margin: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        iframe {
+            width: 100%;
+            height: 600px;
             border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
         }
     </style>
 </head>
@@ -124,11 +95,10 @@
 
         <div class="search-section" id="searchSection">
             <div class="search-box">
-                <input type="text" id="fileSearch" class="search-input" placeholder="Digite a Senha">
+                <input type="text" id="fileSearch" class="search-input" placeholder="Digite o código do livro (ex: 1EMFEM24)">
                 <button class="search-btn" onclick="searchFiles()">🔍 Buscar</button>
             </div>
             <div id="messageArea"></div>
-            <div id="fileList" class="file-grid"></div>
         </div>
 
         <div class="viewer-section" id="viewerSection">
@@ -141,97 +111,54 @@
     </div>
 
     <script>
-        const REPO_URL = 'https://api.github.com/repos/luizdecaxtro/livros-viewer/contents';
-        let currentFile = null;
+        const pdfMap = {
+            "1EMFEM24": { nome: "Empreendedorismo Feminino", link: "https://drive.google.com/file/d/1_9dVOg-UZiHMwV9xOcANzcb9wefX3Ft2/preview" },
+            "2ELA25": { nome: "Elara", link: "https://drive.google.com/file/d/1-6Kmt25p0awxQ6oc230DlgweFHCuzm1g/preview" },
+            "3MENTOR25": { nome: "Mentores Espirituais", link: "https://drive.google.com/file/d/1ICgpTGj__RbQQcG2wP5jCtR2ZuyVKXKb/preview" },
+            "4MNINTE25": { nome: "Manual de Negócios na Internet", link: "https://drive.google.com/file/d/1BIpdcLBC0u-GoEtvHBzL0axQE2fFmaFD/preview" },
+            "5OBEM25": { nome: "O Bem e o Mal", link: "https://drive.google.com/file/d/1KU8aCEyLCuLXDB-S5zwsQjBDe799TwI7/preview" },
+            "6OSCCR21": { nome: "Os Caminhos do Coração", link: "https://drive.google.com/file/d/1AcMzqyLXmnMd3HQcHEgUPZKvWKsuy7eZ/preview" },
+            "7PENTA23": { nome: "O Pentateuco", link: "https://drive.google.com/file/d/1OvInGJdEdWR2KNDu8d1yQrZqOM33vBWS/preview" },
+            "8OPODIA24": { nome: "O Poder da Inteligência Artificial", link: "https://drive.google.com/file/d/1muFknzYHuIaKGCNzwragM4_vAYusLQrS/preview" },
+            "9POEMA20": { nome: "Poemas", link: "https://drive.google.com/file/d/1Us36x2Y_-3wVy6ZU24gc6DkISwPBoyKl/preview" },
+            "10PQLIB22": { nome: "Palavras que Libertam", link: "https://drive.google.com/file/d/1eb7IBYHbukfiLmk8ITlzlcCd5A3-nlOh/preview" }
+        };
 
         function showMessage(text, type) {
             document.getElementById('messageArea').innerHTML = '<div class="message ' + type + '">' + text + '</div>';
-            setTimeout(function() {
+            setTimeout(() => {
                 document.getElementById('messageArea').innerHTML = '';
             }, 3000);
         }
 
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
+        function searchFiles() {
+            const codigo = document.getElementById('fileSearch').value.trim().toUpperCase();
+            const livro = pdfMap[codigo];
 
-        async function fetchGitHubFiles() {
-            const response = await fetch(REPO_URL);
-            const files = await response.json();
-            return files.filter(function(file) {
-                return file.type === 'file' && file.name.toLowerCase().endsWith('.pdf');
-            }).map(function(file) {
-                return { 
-                    name: file.name, 
-                    size: formatFileSize(file.size), 
-                    downloadUrl: file.download_url
-                };
-            });
-        }
-
-        async function searchFiles() {
-            const searchTerm = document.getElementById('fileSearch').value.trim();
-            const fileList = document.getElementById('fileList');
-            
-            if (!searchTerm) {
-                showMessage('Por favor, digite o nome de um arquivo.', 'error');
+            if (!codigo) {
+                showMessage('Por favor, digite o código do livro.', 'error');
                 return;
             }
 
-            showMessage('🔍 Buscando...', 'success');
-            fileList.innerHTML = '<div style="text-align: center; padding: 40px;">Carregando...</div>';
-            
-            try {
-                const files = await fetchGitHubFiles();
-                const filteredFiles = files.filter(function(file) {
-                    return file.name.toLowerCase().includes(searchTerm.toLowerCase());
-                });
-
-                fileList.innerHTML = '';
-                
-                if (filteredFiles.length === 0) {
-                    fileList.innerHTML = '<div style="text-align: center; padding: 40px;"><h3>Nenhum arquivo encontrado</h3><p>Tente outro termo de busca.</p></div>';
-                } else {
-                    for (let i = 0; i < filteredFiles.length; i++) {
-                        const file = filteredFiles[i];
-                        const fileElement = document.createElement('div');
-                        fileElement.className = 'file-item';
-                        fileElement.onclick = function() { openFile(file); };
-                        fileElement.innerHTML = '<div class="file-icon">📄</div><div class="file-name">' + file.name + '</div><div class="file-info">Tamanho: ' + file.size + '</div>';
-                        fileList.appendChild(fileElement);
-                    }
-                    showMessage('✅ ' + filteredFiles.length + ' arquivo(s) encontrado(s).', 'success');
-                }
-            } catch (error) {
-                fileList.innerHTML = '<div style="text-align: center; color: red; padding: 40px;"><h3>Erro de conexão</h3><p>' + error.message + '</p></div>';
-                showMessage('❌ Erro: ' + error.message, 'error');
+            if (!livro) {
+                showMessage('Código inválido. Tente novamente.', 'error');
+                return;
             }
-        }
 
-        function openFile(file) {
-            currentFile = file;
+            showMessage('✅ Livro encontrado: ' + livro.nome, 'success');
             document.getElementById('searchSection').style.display = 'none';
             document.getElementById('viewerSection').style.display = 'block';
-            document.getElementById('viewerTitle').textContent = file.name;
-            
-            const pdfUrl = 'https://raw.githubusercontent.com/luizdecaxtro/livros-viewer/main/' + file.name;
-            const viewerUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(pdfUrl) + '&embedded=true';
-            
-            document.getElementById('pdfViewer').innerHTML = 
-                '<div style="text-align: center; padding: 20px;">' +
-                '<h3>' + file.name + '</h3>' +
-                '<p style="margin: 20px 0;">Clique para abrir o PDF:</p>' +
-                '<a href="' + viewerUrl + '" target="_blank" class="pdf-button">📖 Abrir PDF</a>' +
-                '</div>';
+            document.getElementById('viewerTitle').textContent = livro.nome;
+
+            document.getElementById('pdfViewer').innerHTML = `
+                <iframe src="${livro.link}" allow="autoplay"></iframe>
+            `;
         }
 
         function goBack() {
             document.getElementById('viewerSection').style.display = 'none';
             document.getElementById('searchSection').style.display = 'block';
+            document.getElementById('fileSearch').value = '';
         }
 
         document.getElementById('fileSearch').addEventListener('keypress', function(e) {
@@ -243,3 +170,4 @@
         };
     </script>
 </body>
+</html>
