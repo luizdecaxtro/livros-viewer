@@ -1,99 +1,147 @@
-<script>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livros de Castro – Leitor de PDF</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 40px 20px;
+      text-align: center;
+      color: #fff;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.1em;
+      margin-bottom: 30px;
+    }
+    input {
+      padding: 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      width: 70%;
+      margin-right: 10px;
+    }
+    button {
+      padding: 15px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #fff;
+      color: #764ba2;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .result {
+      background: #fff;
+      color: #333;
+      border-radius: 12px;
+      padding: 30px;
+      margin-top: 30px;
+    }
+    .pdf-button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 15px 25px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Livros de Castro</h1>
+    <p>Digite o código do livro para abrir o PDF</p>
+    <input type="text" id="codigoLivro" placeholder="Ex: 1EMFEM24">
+    <button onclick="buscarLivro()">Abrir</button>
+
+    <div id="resultado" class="result" style="display:none;"></div>
+  </div>
+
+  <script>
     const livros = {
-        "1EMFEM24": {
-            nome: "Empreendedorismo Feminino",
-            id: "1_9dVOg-UZiHMwV9xOcANzcb9wefX3Ft2"
-        },
-        "2ELA25": {
-            nome: "Elara",
-            id: "1-6Kmt25p0awxQ6oc230DlgweFHCuzm1g"
-        },
-        "3MENTOR25": {
-            nome: "Mentores Espirituais",
-            id: "1ICgpTGj__RbQQcG2wP5jCtR2ZuyVKXKb"
-        },
-        "4MNINTE25": {
-            nome: "Manual de Negócios na Internet",
-            id: "1BIpdcLBC0u-GoEtvHBzL0axQE2fFmaFD"
-        },
-        "5OBEM25": {
-            nome: "O Bem e o Mal",
-            id: "1KU8aCEyLCuLXDB-S5zwsQjBDe799TwI7"
-        },
-        "6OSCCR21": {
-            nome: "Os Caminhos do Coração",
-            id: "1AcMzqyLXmnMd3HQcHEgUPZKvWKsuy7eZ"
-        },
-        "7PENTA23": {
-            nome: "O Pentateuco",
-            id: "1OvInGJdEdWR2KNDu8d1yQrZqOM33vBWS"
-        },
-        "8OPODIA24": {
-            nome: "O Poder da Inteligência Artificial",
-            id: "1muFknzYHuIaKGCNzwragM4_vAYusLQrS"
-        },
-        "9POEMA20": {
-            nome: "Poemas",
-            id: "1Us36x2Y_-3wVy6ZU24gc6DkISwPBoyKl"
-        },
-        "10PQLIB22": {
-            nome: "Palavras que Libertam",
-            id: "1eb7IBYHbukfiLmk8ITlzlcCd5A3-nlOh"
-        }
+      "1EMFEM24": {
+        nome: "Empreendedorismo Feminino",
+        id: "1_9dVOg-UZiHMwV9xOcANzcb9wefX3Ft2"
+      },
+      "2ELA25": {
+        nome: "Elara",
+        id: "1-6Kmt25p0awxQ6oc230DlgweFHCuzm1g"
+      },
+      "3MENTOR25": {
+        nome: "Mentores Espirituais",
+        id: "1ICgpTGj__RbQQcG2wP5jCtR2ZuyVKXKb"
+      },
+      "4MNINTE25": {
+        nome: "Manual de Negócios na Internet",
+        id: "1BIpdcLBC0u-GoEtvHBzL0axQE2fFmaFD"
+      },
+      "5OBEM25": {
+        nome: "O Bem e o Mal",
+        id: "1KU8aCEyLCuLXDB-S5zwsQjBDe799TwI7"
+      },
+      "6OSCCR21": {
+        nome: "Os Caminhos do Coração",
+        id: "1AcMzqyLXmnMd3HQcHEgUPZKvWKsuy7eZ"
+      },
+      "7PENTA23": {
+        nome: "O Pentateuco",
+        id: "1OvInGJdEdWR2KNDu8d1yQrZqOM33vBWS"
+      },
+      "8OPODIA24": {
+        nome: "O Poder da Inteligência Artificial",
+        id: "1muFknzYHuIaKGCNzwragM4_vAYusLQrS"
+      },
+      "9POEMA20": {
+        nome: "Poemas",
+        id: "1Us36x2Y_-3wVy6ZU24gc6DkISwPBoyKl"
+      },
+      "10PQLIB22": {
+        nome: "Palavras que Libertam",
+        id: "1eb7IBYHbukfiLmk8ITlzlcCd5A3-nlOh"
+      }
     };
 
-    function showMessage(text, type) {
-        document.getElementById('messageArea').innerHTML = '<div class="message ' + type + '">' + text + '</div>';
-        setTimeout(function() {
-            document.getElementById('messageArea').innerHTML = '';
-        }, 3000);
+    function buscarLivro() {
+      const codigo = document.getElementById("codigoLivro").value.trim().toUpperCase();
+      const livro = livros[codigo];
+      const resultado = document.getElementById("resultado");
+
+      if (!livro) {
+        resultado.style.display = "block";
+        resultado.innerHTML = `<p>❌ Código inválido ou livro não encontrado.</p>`;
+        return;
+      }
+
+      const linkPDF = `https://drive.google.com/uc?export=download&id=${livro.id}`;
+      resultado.style.display = "block";
+      resultado.innerHTML = `
+        <h2>${livro.nome}</h2>
+        <p><strong>Código:</strong> ${codigo}</p>
+        <p><strong>Senha para abrir o PDF:</strong> LIBERAR2025</p>
+        <a href="${linkPDF}" target="_blank" class="pdf-button">📖 Abrir PDF</a>
+      `;
     }
+  </script>
+</body>
+</html>
 
-    function searchFiles() {
-        const codigo = document.getElementById('fileSearch').value.trim().toUpperCase();
-        const livro = livros[codigo];
-
-        if (!codigo) {
-            showMessage('Por favor, digite o código do livro.', 'error');
-            return;
-        }
-
-        if (!livro) {
-            showMessage('❌ Código inválido ou livro não encontrado.', 'error');
-            return;
-        }
-
-        showMessage('✅ Livro encontrado: ' + livro.nome, 'success');
-        openFile(livro, codigo);
-    }
-
-    function openFile(livro, codigo) {
-        document.getElementById('searchSection').style.display = 'none';
-        document.getElementById('viewerSection').style.display = 'block';
-        document.getElementById('viewerTitle').textContent = livro.nome;
-
-        const linkPDF = `https://drive.google.com/uc?export=download&id=${livro.id}`;
-
-        document.getElementById('pdfViewer').innerHTML =
-            '<div style="text-align: center; padding: 20px;">' +
-            '<h3>' + livro.nome + '</h3>' +
-            '<p><strong>Código:</strong> ' + codigo + '</p>' +
-            '<p><strong>Senha para abrir o PDF:</strong> LIBERAR2025</p>' +
-            '<p style="margin: 20px 0;">Clique para abrir o PDF:</p>' +
-            '<a href="' + linkPDF + '" target="_blank" class="pdf-button">📖 Abrir PDF</a>' +
-            '</div>';
-    }
-
-    function goBack() {
-        document.getElementById('viewerSection').style.display = 'none';
-        document.getElementById('searchSection').style.display = 'block';
-    }
-
-    document.getElementById('fileSearch').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') searchFiles();
-    });
-
-    window.onload = function() {
-        showMessage('Sistema carregado!', 'success');
-    };
-</script>
