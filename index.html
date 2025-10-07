@@ -48,6 +48,23 @@
             cursor: pointer;
             font-weight: 600;
         }
+        .back-to-site-btn {
+            width: 100%;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #34a853 0%, #2d8e47 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        .back-to-site-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
         .message {
             padding: 15px;
             border-radius: 8px;
@@ -97,8 +114,8 @@
             <div class="search-box">
                 <input type="text" id="fileSearch" class="search-input" placeholder="Digite o código do livro">
                 <button class="search-btn" onclick="searchFiles()">🔍 Buscar</button>
-                
             </div>
+            <button class="back-to-site-btn" onclick="window.location.href='https://www.lojasdecastro.com.br'">← Voltar para Lojas de Castro</button>
             <div id="messageArea"></div>
         </div>
 
