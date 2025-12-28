@@ -79,27 +79,6 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             display: none;
         }
-        .viewer-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        .viewer-title { color: #333; font-size: 1.5em; }
-        .control-btn {
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        iframe {
-            width: 100%;
-            height: 600px;
-            border: none;
-        }
     </style>
 </head>
 <body>
@@ -120,27 +99,23 @@
         </div>
 
         <div class="viewer-section" id="viewerSection">
-            <div class="viewer-header">
-                <h3 class="viewer-title" id="viewerTitle">PDF</h3>
-                <button class="control-btn" onclick="goBack()">← Voltar</button>
-            </div>
-            <div id="pdfViewer"></div>
         </div>
     </div>
 
     <script>
         const pdfMap = {
-            "12ESM25": {nome: "Estatística Sem Mistério", link: "https://drive.google.com/file/d/1Pxl3neIBSfrqERn8Wbn5yTQIPuoGSFUQ/preview"},
-            "1EMFEM24": { nome: "Empreendedorismo Feminino", link: "https://drive.google.com/file/d/1_9dVOg-UZiHMwV9xOcANzcb9wefX3Ft2/preview"},
-            "2ELA25": { nome: "Elara", link: "https://drive.google.com/file/d/1-6Kmt25p0awxQ6oc230DlgweFHCuzm1g/preview" },
-            "3MENTOR25": { nome: "Mentores Espirituais", link: "https://drive.google.com/file/d/1ICgpTGj__RbQQcG2wP5jCtR2ZuyVKXKb/preview" },
-            "4MNINTE25": { nome: "Manual de Negócios na Internet", link: "https://drive.google.com/file/d/1BIpdcLBC0u-GoEtvHBzL0axQE2fFmaFD/preview" },
-            "5OBEM25": { nome: "O Bem e o Mal", link: "https://drive.google.com/file/d/1KU8aCEyLCuLXDB-S5zwsQjBDe799TwI7/preview" },
-            "6OSCCR21": { nome: "Os Caminhos do Coração", link: "https://drive.google.com/file/d/1AcMzqyLXmnMd3HQcHEgUPZKvWKsuy7eZ/preview" },
-            "7PENTA23": { nome: "O Pentateuco", link: "https://drive.google.com/file/d/1OvInGJdEdWR2KNDu8d1yQrZqOM33vBWS/preview" },
-            "8OPODIA24": { nome: "O Poder da Inteligência Artificial", link: "https://drive.google.com/file/d/1muFknzYHuIaKGCNzwragM4_vAYusLQrS/preview" },
-            "9POEMA20": { nome: "Poemas", link: "https://drive.google.com/file/d/1Us36x2Y_-3wVy6ZU24gc6DkISwPBoyKl/preview" },
-            "10PQLIB22": { nome: "Palavras que Libertam", link: "https://drive.google.com/file/d/1eb7IBYHbukfiLmk8ITlzlcCd5A3-nlOh/preview" }
+            "1EMFEM24": { nome: "Empreendedorismo Feminino", link: "https://drive.google.com/file/d/1lbk7IpPkPVsuDRyUVr29OHwA5rIFbYSr/preview", viewLink: "https://drive.google.com/file/d/1lbk7IpPkPVsuDRyUVr29OHwA5rIFbYSr/view"},
+            "2ELA25": { nome: "Elara", link: "https://drive.google.com/file/d/1GbB9Url_JyY7nbCiqrRjwvCS0jQBlVKN/preview", viewLink: "https://drive.google.com/file/d/1GbB9Url_JyY7nbCiqrRjwvCS0jQBlVKN/view" },
+            "3MENTOR25": { nome: "Mentores Espirituais", link: "https://drive.google.com/file/d/1D8uHPZkqdHDkT9DUOsoKUmTlu32GhX6k/preview", viewLink: "https://drive.google.com/file/d/1D8uHPZkqdHDkT9DUOsoKUmTlu32GhX6k/view" },
+            "4MNINTE25": { nome: "Manual de Negócios na Internet", link: "https://drive.google.com/file/d/1sd_b2QQhp6NCyCHluvkhyZBoY_4gK7m3/preview", viewLink: "https://drive.google.com/file/d/1sd_b2QQhp6NCyCHluvkhyZBoY_4gK7m3/view" },
+            "5OBEM25": { nome: "O Bem e o Mal", link: "https://drive.google.com/file/d/1C6E30LeyHEIjPFf4HMxdCUuH6mNkM2Y-/preview", viewLink: "https://drive.google.com/file/d/1C6E30LeyHEIjPFf4HMxdCUuH6mNkM2Y-/view" },
+            "6OSCCR21": { nome: "Os Caminhos do Coração", link: "https://drive.google.com/file/d/1MMetBAqJcYoYnEzbfFx5CoBy1kh9xs_q/preview", viewLink: "https://drive.google.com/file/d/1MMetBAqJcYoYnEzbfFx5CoBy1kh9xs_q/view" },
+            "7PENTA23": { nome: "O Pentateuco", link: "https://drive.google.com/file/d/1v4ay6bckWRUveOzI3AwHQcEqfNGpuJ99/preview", viewLink: "https://drive.google.com/file/d/1v4ay6bckWRUveOzI3AwHQcEqfNGpuJ99/view" },
+            "8OPODIA24": { nome: "O Poder da Inteligência Artificial", link: "https://drive.google.com/file/d/1xy1seT5m4Nhz-14j4PDPiA8SsDHfPWKr/preview", viewLink: "https://drive.google.com/file/d/1xy1seT5m4Nhz-14j4PDPiA8SsDHfPWKr/view" },
+            "9POEMA20": { nome: "Poemas", link: "https://drive.google.com/file/d/19QuxdK5vORat_G5Noo-Y7S2BpGzS7PEY/preview", viewLink: "https://drive.google.com/file/d/19QuxdK5vORat_G5Noo-Y7S2BpGzS7PEY/view" },
+            "10PQLIB22": { nome: "Palavras que Libertam", link: "https://drive.google.com/file/d/1lW-zAmyhAdQZyqhJJNZIENGWHAqPslLR/preview", viewLink: "https://drive.google.com/file/d/1lW-zAmyhAdQZyqhJJNZIENGWHAqPslLR/view" },
+            "11NOVO25": { nome: "Novo Livro", link: "https://drive.google.com/file/d/1tETfV1fzAfyO7gcVHzImh_dBWJp2Cp9W/preview", viewLink: "https://drive.google.com/file/d/1tETfV1fzAfyO7gcVHzImh_dBWJp2Cp9W/view" },
+            "12ESM25": {nome: "Estatística Sem Mistério", link: "https://drive.google.com/file/d/1MQ-LX07VOQ5YSUuV6uPKKxiA60OhAptm/preview", viewLink: "https://drive.google.com/file/d/1MQ-LX07VOQ5YSUuV6uPKKxiA60OhAptm/view"}
         };
 
         function showMessage(text, type) {
@@ -165,13 +140,12 @@
             }
 
             showMessage('✅ Livro encontrado: ' + livro.nome, 'success');
-            document.getElementById('searchSection').style.display = 'none';
-            document.getElementById('viewerSection').style.display = 'block';
-            document.getElementById('viewerTitle').textContent = livro.nome;
-
-            document.getElementById('pdfViewer').innerHTML = `
-                <iframe src="${livro.link}" allow="autoplay"></iframe>
-            `;
+            
+            // Abre o PDF diretamente em uma nova aba
+            window.open(livro.viewLink, '_blank');
+            
+            // Limpa o campo de busca
+            document.getElementById('fileSearch').value = '';
         }
 
         function goBack() {
@@ -185,7 +159,7 @@
         });
 
         window.onload = function() {
-            showMessage('Sistema carregado!', 'success');
+            showMessage('Sistema carregado! Digite o código e pressione Enter ou clique em Buscar.', 'success');
         };
     </script>
 </body>
