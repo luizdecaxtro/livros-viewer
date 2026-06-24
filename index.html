@@ -91,7 +91,7 @@
 
         <div class="search-section" id="searchSection">
             <div class="search-box">
-                <input type="text" id="fileSearch" class="search-input" placeholder="Digite o código do livro">
+                <input type="text" id="fileSearch" class="search-input" placeholder="Digite o código do livro (com ou sem .pdf)">
                 <button class="search-btn" onclick="searchFiles()">🔍 Buscar</button>
             </div>
             <button class="back-to-site-btn" onclick="window.location.href='https://www.lojasdecastro.com.br'">← Voltar para LojasDeCastro</button>
@@ -104,7 +104,7 @@
 
     <script>
         const pdfMap = {
-            "1EMFEM24": { nome: "Empreendedorismo Feminino", link: "https://drive.google.com/file/d/1a4RP_3DT5YsST95v8_YX64PZiiwxDNWX/preview", viewLink: "https://drive.google.com/file/d/1a4RP_3DT5YsST95v8_YX64PZiiwxDNWX/view"},
+            "1EMFEM24": { nome: "Empreendedorismo Feminino", link: "https://drive.google.com/file/d/1a4RP_3DT5YsST95v8_YX64PZiiwxDNWX/preview", viewLink: "https://drive.google.com/file/d/1a4RP_3DT5YsST95v8_YX64PZiiwxDNWX/view" },
             "2ELA25": { nome: "Elara", link: "https://drive.google.com/file/d/1KqrSwud2bV6reX1YYPSGovWAdMc0bh5h/preview", viewLink: "https://drive.google.com/file/d/1KqrSwud2bV6reX1YYPSGovWAdMc0bh5h/view" },
             "3MENTOR25": { nome: "Mentores Espirituais", link: "https://drive.google.com/file/d/1KqrSwud2bV6reX1YYPSGovWAdMc0bh5h/preview", viewLink: "https://drive.google.com/file/d/1KqrSwud2bV6reX1YYPSGovWAdMc0bh5h/view" },
             "4MNINTE25": { nome: "Manual de Negócios na Internet", link: "https://drive.google.com/file/d/1zdigUJwbLK8ib6X_jxaazGBApHdBmKKM/preview", viewLink: "https://drive.google.com/file/d/1zdigUJwbLK8ib6X_jxaazGBApHdBmKKM/view" },
@@ -128,7 +128,12 @@
         }
 
         function searchFiles() {
-            const codigo = document.getElementById('fileSearch').value.trim().toUpperCase();
+            // Aceita o código com ou sem ".pdf" no final
+            const codigo = document.getElementById('fileSearch').value
+                .trim()
+                .toUpperCase()
+                .replace(/\.PDF$/, '');
+
             const livro = pdfMap[codigo];
 
             if (!codigo) {
@@ -142,10 +147,10 @@
             }
 
             showMessage('✅ Livro encontrado: ' + livro.nome, 'success');
-            
+
             // Abre o PDF diretamente em uma nova aba
             window.open(livro.viewLink, '_blank');
-            
+
             // Limpa o campo de busca
             document.getElementById('fileSearch').value = '';
         }
@@ -166,3 +171,4 @@
     </script>
 </body>
 </html>
+
